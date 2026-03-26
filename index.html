@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LaneVision AI | Lane Detection System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="grid-overlay"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-badge">LV</div>
+      <div>
+        <h1>LaneVision AI</h1>
+        <p>Deep Learning Based Lane Detection System</p>
+      </div>
+    </div>
+    <a class="ghost-btn" href="#upload-section">Launch Demo</a>
+  </header>
+
+  <main class="page-shell">
+    <section class="hero card-glass">
+      <div class="hero-copy">
+        <span class="eyebrow">Capstone Project Demo</span>
+        <h2>Upload a driving video to generate a lane-detected output.
+
+        </h2>
+        <p>
+          This web application allows the user to upload a video, process it using the trained lane detection model,
+          preview the result, and download the final lane-detected video.
+        </p>
+        <div class="hero-actions">
+          <a href="#upload-section" class="primary-btn">Upload Video</a>
+          <a href="#how-it-works" class="secondary-btn">See Workflow</a>
+        </div>
+      </div>
+
+      <div class="hero-panel">
+        <div class="metric-card">
+          <span>Model</span>
+          <strong>Fully Convolutional CNN</strong>
+        </div>
+        <div class="metric-card">
+          <span>Input</span>
+          <strong>User Video Upload</strong>
+        </div>
+        <div class="metric-card">
+          <span>Output</span>
+          <strong>Lane Overlay Video</strong>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="workflow-grid">
+      <article class="info-card card-glass">
+        <span>01</span>
+        <h3>Upload</h3>
+        <p>Select a driving video from your local system.</p>
+      </article>
+      <article class="info-card card-glass">
+        <span>02</span>
+        <h3>Process</h3>
+        <p>The backend loads your trained model and processes the video frame by frame.</p>
+      </article>
+      <article class="info-card card-glass">
+        <span>03</span>
+        <h3>Preview</h3>
+        <p>The processed output is shown directly in the browser.</p>
+      </article>
+      <article class="info-card card-glass">
+        <span>04</span>
+        <h3>Download</h3>
+        <p>Download the final lane-detected output video.</p>
+      </article>
+    </section>
+
+    <section id="upload-section" class="demo-grid">
+      <div class="uploader card-glass">
+        <div class="section-heading">
+          <span class="eyebrow">Interactive Demo</span>
+          <h3>Lane Detection Video Processing</h3>
+          <p>Supported formats: MP4, MOV, AVI, MKV</p>
+        </div>
+
+        <form id="uploadForm" class="upload-form">
+          <label for="videoInput" class="drop-zone" id="dropZone">
+            <input type="file" id="videoInput" name="video" accept="video/*" hidden>
+            <div class="drop-content">
+              <div class="upload-icon">↑</div>
+              <h4>Drag & drop your video here</h4>
+              <p>or click to browse from your computer</p>
+              <span id="selectedFileName">No file selected</span>
+            </div>
+          </label>
+
+          <button type="submit" class="primary-btn full-btn" id="processBtn">
+            Process Video
+          </button>
+        </form>
+
+        <div class="status-box" id="statusBox">
+          <div class="status-dot"></div>
+          <p id="statusText">Waiting for video upload...</p>
+        </div>
+      </div>
+
+      <div class="result-panel card-glass">
+        <div class="section-heading">
+          <span class="eyebrow">Processed Output</span>
+          <h3>Result Preview</h3>
+          <p>Your lane-detected video will appear here after processing.</p>
+        </div>
+
+        <div class="video-preview-wrapper" id="videoPreviewWrapper">
+          <div class="video-placeholder" id="videoPlaceholder">
+            <div class="placeholder-icon">▶</div>
+            <p>No processed video yet</p>
+          </div>
+
+          <video id="resultVideo" controls class="result-video hidden"></video>
+        </div>
+
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <a id="downloadBtn" class="primary-btn full-btn hidden" download>
+          Download Processed Video
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
