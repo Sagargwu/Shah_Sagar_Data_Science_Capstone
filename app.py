@@ -47,23 +47,35 @@ def api_process():
 
     original_name = secure_filename(file.filename)
     file_id = uuid.uuid4().hex[:12]
+
     upload_name = f"{file_id}_{original_name}"
     output_name = f"lane_detected_{file_id}.mp4"
+    asset_prefix = str(OUTPUT_DIR / f"analysis_{file_id}")
 
     upload_path = UPLOAD_DIR / upload_name
     output_path = OUTPUT_DIR / output_name
 
     try:
         file.save(upload_path)
-        stats = process_video(str(upload_path), str(output_path))
+
+        stats = process_video(
+            input_path=str(upload_path),
+            output_path=str(output_path),
+            asset_prefix=asset_prefix
+        )
+
+        assets = stats.get("assets", {})
 
         return jsonify({
             "ok": True,
-            "message": "Lane detection completed successfully.",
-            "download_url": url_for("download_file", filename=output_name),
+            "message": "Lane detection and analytics dashboard generated successfully.",
             "preview_url": url_for("output_file", filename=output_name),
-            "output_filename": output_name,
-            "stats": stats
+            "download_url": url_for("download_file", filename=output_name),
+            "stats": stats,
+            "assets": {
+                key: url_for("output_file", filename=value)
+                for key, value in assets.items()
+            }
         })
     except Exception as exc:
         return jsonify({
