@@ -29,16 +29,16 @@
     <section class="hero card-glass">
       <div class="hero-copy">
         <span class="eyebrow">Capstone Project Demo</span>
-        <h2>Upload a driving video to generate a lane-detected output.
-
-        </h2>
+        <h2>Lane Detection System Using Deep learning.</h2>
         <p>
-          This web application allows the user to upload a video, process it using the trained lane detection model,
-          preview the result, and download the final lane-detected video.
+          Upload a driving video, process it using the trained deep learning model, compare the
+          original and processed videos side by side, inspect performance analytics, and visualize
+          lane confidence using a complete EDA dashboard.
         </p>
+
         <div class="hero-actions">
           <a href="#upload-section" class="primary-btn">Upload Video</a>
-          <a href="#how-it-works" class="secondary-btn">See Workflow</a>
+          <a href="#dashboard-section" class="secondary-btn">See Dashboard</a>
         </div>
       </div>
 
@@ -48,36 +48,36 @@
           <strong>Fully Convolutional CNN</strong>
         </div>
         <div class="metric-card">
-          <span>Input</span>
-          <strong>User Video Upload</strong>
+          <span>Comparison View</span>
+          <strong>Original + Processed Video</strong>
         </div>
         <div class="metric-card">
-          <span>Output</span>
-          <strong>Lane Overlay Video</strong>
+          <span>Analytics</span>
+          <strong>Latency, FPS, Confidence, Heatmap, EDA</strong>
         </div>
       </div>
     </section>
 
-    <section id="how-it-works" class="workflow-grid">
+    <section class="workflow-grid">
       <article class="info-card card-glass">
         <span>01</span>
         <h3>Upload</h3>
-        <p>Select a driving video from your local system.</p>
+        <p>Select a driving video from your local computer.</p>
       </article>
       <article class="info-card card-glass">
         <span>02</span>
         <h3>Process</h3>
-        <p>The backend loads your trained model and processes the video frame by frame.</p>
+        <p>The backend runs frame-by-frame lane detection with adaptive low-light enhancement.</p>
       </article>
       <article class="info-card card-glass">
         <span>03</span>
-        <h3>Preview</h3>
-        <p>The processed output is shown directly in the browser.</p>
+        <h3>Compare</h3>
+        <p>Watch original and processed videos together on the same webpage.</p>
       </article>
       <article class="info-card card-glass">
         <span>04</span>
-        <h3>Download</h3>
-        <p>Download the final lane-detected output video.</p>
+        <h3>Analyze</h3>
+        <p>Inspect latency, throughput, confidence metrics, heatmaps, and visual EDA outputs.</p>
       </article>
     </section>
 
@@ -111,28 +111,163 @@
         </div>
       </div>
 
-      <div class="result-panel card-glass">
+      <div class="project-highlights card-glass">
         <div class="section-heading">
-          <span class="eyebrow">Processed Output</span>
-          <h3>Result Preview</h3>
-          <p>Your lane-detected video will appear here after processing.</p>
+          <span class="eyebrow">System Highlights</span>
+          <h3>What this demo now shows</h3>
+          <p>A polished capstone-ready interface built for presentation and live demo impact.</p>
         </div>
 
-        <div class="video-preview-wrapper" id="videoPreviewWrapper">
-          <div class="video-placeholder" id="videoPlaceholder">
-            <div class="placeholder-icon">▶</div>
-            <p>No processed video yet</p>
+        <div class="highlights-grid">
+          <div class="highlight-item">
+            <h4>Dual Video Display</h4>
+            <p>Original video on the left and processed video on the right.</p>
+          </div>
+          <div class="highlight-item">
+            <h4>Night Video Support</h4>
+            <p>Dark frames are enhanced before inference for more stable detection.</p>
+          </div>
+          <div class="highlight-item">
+            <h4>Heatmap Visualization</h4>
+            <p>Attractive lane confidence summary rendered from the full processed video.</p>
+          </div>
+          <div class="highlight-item">
+            <h4>EDA Dashboard</h4>
+            <p>Confidence, latency, coverage, lighting distribution, and frame quality analysis.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dashboard-section" class="dashboard-grid">
+      <div class="comparison-panel card-glass">
+        <div class="section-heading">
+          <span class="eyebrow">2-Panel Comparison</span>
+          <h3>Original vs Processed Video</h3>
+          <p>Both videos are shown together on the same page for direct visual comparison.</p>
+        </div>
+
+        <div class="video-compare-grid">
+          <div class="video-card">
+            <div class="video-card-head">
+              <h4>Original Input Video</h4>
+              <span class="chip chip-blue">Left Panel</span>
+            </div>
+            <div class="video-shell">
+              <div class="video-placeholder" id="originalPlaceholder">
+                <div class="placeholder-icon">▶</div>
+                <p>No original video loaded yet</p>
+              </div>
+              <video id="originalVideo" class="result-video hidden" controls muted></video>
+            </div>
           </div>
 
-          <video id="resultVideo" controls class="result-video hidden"></video>
+          <div class="video-card">
+            <div class="video-card-head">
+              <h4>Lane Detection Output</h4>
+              <span class="chip chip-green">Right Panel</span>
+            </div>
+            <div class="video-shell">
+              <div class="video-placeholder" id="processedPlaceholder">
+                <div class="placeholder-icon">▶</div>
+                <p>No processed video yet</p>
+              </div>
+              <video id="processedVideo" class="result-video hidden" controls muted></video>
+            </div>
+          </div>
         </div>
 
-        <div class="stats-grid" id="statsGrid"></div>
-
-        <a id="downloadBtn" class="primary-btn full-btn hidden" download>
-          Download Processed Video
-        </a>
+        <div class="compare-actions">
+          <button class="secondary-btn" id="syncPlayBtn" type="button">Sync Play Both Videos</button>
+          <a id="downloadBtn" class="primary-btn hidden" download>Download Processed Video</a>
+        </div>
       </div>
+
+      <aside class="analytics-panel card-glass">
+        <div class="section-heading">
+          <span class="eyebrow">Analytics & Visualization</span>
+          <h3>Processing Insights</h3>
+          <p>Real-time style metrics for latency, throughput, confidence, and video summary output.</p>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-item">
+            <div class="stat-label">Status</div>
+            <div class="stat-value">Waiting</div>
+          </div>
+        </div>
+
+        <div class="heatmap-block">
+          <div class="heatmap-head">
+            <h4>Lane Confidence Heatmap</h4>
+            <span class="chip chip-purple">Visualization</span>
+          </div>
+          <div class="heatmap-shell">
+            <img id="heatmapImage" class="heatmap-image hidden" alt="Lane confidence heatmap">
+            <div class="heatmap-placeholder" id="heatmapPlaceholder">
+              <div class="placeholder-icon">◎</div>
+              <p>No heatmap generated yet</p>
+            </div>
+          </div>
+          <p class="heatmap-caption">
+            This heatmap summarizes where the model detected lane structure with higher confidence across the processed video.
+          </p>
+        </div>
+      </aside>
+    </section>
+
+    <section id="eda-dashboard" class="eda-dashboard card-glass">
+      <div class="section-heading">
+        <span class="eyebrow">Final Analytics Dashboard</span>
+        <h3>Model EDA and Visual Explanation Panel</h3>
+        <p>
+          This dashboard explains how the lane detection system behaved across the full video,
+          including confidence, latency, lane coverage, lighting distribution, and example frames.
+        </p>
+      </div>
+
+      <div class="dashboard-metrics-grid" id="dashboardMetricsGrid">
+        <div class="stat-item">
+          <div class="stat-label">Dashboard Status</div>
+          <div class="stat-value">Waiting for analysis</div>
+        </div>
+      </div>
+
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <h4>Frame-wise Confidence</h4>
+            <span class="chip chip-blue">Trend</span>
+          </div>
+          <img id="chartConfidence" class="dashboard-image hidden" alt="Confidence chart">
+          <div class="chart-placeholder" id="chartConfidencePlaceholder">No chart yet</div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <h4>Frame-wise Latency</h4>
+            <span class="chip chip-green">Performance</span>
+          </div>
+          <img id="chartLatency" class="dashboard-image hidden" alt="Latency chart">
+          <div class="chart-placeholder" id="chartLatencyPlaceholder">No chart yet</div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <h4>Lane Coverage Distribution</h4>
+            <span class="chip chip-purple">Distribution</span>
+          </div>
+          <img id="chartCoverage" class="dashboard-image hidden" alt="Coverage chart">
+          <div class="chart-placeholder" id="chartCoveragePlaceholder">No chart yet</div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <h4>Best Detected Frame</h4>
+            <span class="chip chip-green">High Confidence</span>
+          </div>
+          <img id="chartBestFrame" class="dashboard-image hidden" alt="Best frame">
+          <div class="chart-placeholder" id="chartBestFramePlaceholder">No image yet</div>
+        </div>
     </section>
   </main>
 
