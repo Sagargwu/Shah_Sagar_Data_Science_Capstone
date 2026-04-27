@@ -29,16 +29,16 @@
     <section class="hero card-glass">
       <div class="hero-copy">
         <span class="eyebrow">Capstone Project Demo</span>
-        <h2>Lane Detection System Using Deep learning.</h2>
+        <h2>Lane Detection System Using Deep Learning.</h2>
         <p>
           Upload a driving video, process it using the trained deep learning model, compare the
-          original and processed videos side by side, inspect performance analytics, and visualize
-          lane confidence using a complete EDA dashboard.
+          original and processed videos side by side, and generate a final driving risk dashboard
+          with safe, caution, and danger zone analysis for lane departure behavior.
         </p>
 
         <div class="hero-actions">
           <a href="#upload-section" class="primary-btn">Upload Video</a>
-          <a href="#dashboard-section" class="secondary-btn">See Dashboard</a>
+          <a href="#risk-dashboard" class="secondary-btn">See Risk Dashboard</a>
         </div>
       </div>
 
@@ -52,8 +52,8 @@
           <strong>Original + Processed Video</strong>
         </div>
         <div class="metric-card">
-          <span>Analytics</span>
-          <strong>Latency, FPS, Confidence, Heatmap, EDA</strong>
+          <span>Final Output</span>
+          <strong>Risk Assessment Dashboard</strong>
         </div>
       </div>
     </section>
@@ -67,17 +67,17 @@
       <article class="info-card card-glass">
         <span>02</span>
         <h3>Process</h3>
-        <p>The backend runs frame-by-frame lane detection with adaptive low-light enhancement.</p>
+        <p>The backend performs lane detection frame by frame with faster night and snow support.</p>
       </article>
       <article class="info-card card-glass">
         <span>03</span>
         <h3>Compare</h3>
-        <p>Watch original and processed videos together on the same webpage.</p>
+        <p>Watch the original and processed videos together on one webpage.</p>
       </article>
       <article class="info-card card-glass">
         <span>04</span>
-        <h3>Analyze</h3>
-        <p>Inspect latency, throughput, confidence metrics, heatmaps, and visual EDA outputs.</p>
+        <h3>Assess Risk</h3>
+        <p>Review safe, caution, and danger zones, lane departure alerts, and risk charts.</p>
       </article>
     </section>
 
@@ -114,8 +114,8 @@
       <div class="project-highlights card-glass">
         <div class="section-heading">
           <span class="eyebrow">System Highlights</span>
-          <h3>What this demo now shows</h3>
-          <p>A polished capstone-ready interface built for presentation and live demo impact.</p>
+          <h3>What this final demo shows</h3>
+          <p>A polished capstone-ready interface built for presentation and final class submission.</p>
         </div>
 
         <div class="highlights-grid">
@@ -124,16 +124,16 @@
             <p>Original video on the left and processed video on the right.</p>
           </div>
           <div class="highlight-item">
-            <h4>Night Video Support</h4>
-            <p>Dark frames are enhanced before inference for more stable detection.</p>
+            <h4>Night + Snow Support</h4>
+            <p>Dark and snowy frames are preprocessed for more stable lane prediction.</p>
           </div>
           <div class="highlight-item">
-            <h4>Heatmap Visualization</h4>
-            <p>Attractive lane confidence summary rendered from the full processed video.</p>
+            <h4>Risk Zone Overlay</h4>
+            <p>Green for safe, yellow for caution, and red when the vehicle drifts off lane.</p>
           </div>
           <div class="highlight-item">
-            <h4>EDA Dashboard</h4>
-            <p>Confidence, latency, coverage, lighting distribution, and frame quality analysis.</p>
+            <h4>Filter Panel</h4>
+            <p>A left-side control panel helps present only the most important charts during class.</p>
           </div>
         </div>
       </div>
@@ -164,7 +164,7 @@
 
           <div class="video-card">
             <div class="video-card-head">
-              <h4>Lane Detection Output</h4>
+              <h4>Lane Detection + Risk Output</h4>
               <span class="chip chip-green">Right Panel</span>
             </div>
             <div class="video-shell">
@@ -185,9 +185,9 @@
 
       <aside class="analytics-panel card-glass">
         <div class="section-heading">
-          <span class="eyebrow">Analytics & Visualization</span>
-          <h3>Processing Insights</h3>
-          <p>Real-time style metrics for latency, throughput, confidence, and video summary output.</p>
+          <span class="eyebrow">Processing Overview</span>
+          <h3>Real-Time Risk Summary</h3>
+          <p>Quick insight panel for video details, processing performance, and final risk evaluation.</p>
         </div>
 
         <div class="stats-grid" id="statsGrid">
@@ -199,75 +199,147 @@
 
         <div class="heatmap-block">
           <div class="heatmap-head">
-            <h4>Lane Confidence Heatmap</h4>
+            <h4>Lane Detection Heatmap</h4>
             <span class="chip chip-purple">Visualization</span>
           </div>
           <div class="heatmap-shell">
-            <img id="heatmapImage" class="heatmap-image hidden" alt="Lane confidence heatmap">
+            <img id="heatmapImage" class="heatmap-image hidden" alt="Lane detection heatmap">
             <div class="heatmap-placeholder" id="heatmapPlaceholder">
               <div class="placeholder-icon">◎</div>
               <p>No heatmap generated yet</p>
             </div>
           </div>
           <p class="heatmap-caption">
-            This heatmap summarizes where the model detected lane structure with higher confidence across the processed video.
+            This heatmap summarizes where the model detected lane structure over the processed video.
           </p>
         </div>
       </aside>
     </section>
 
-    <section id="eda-dashboard" class="eda-dashboard card-glass">
+    <section id="risk-dashboard" class="eda-dashboard card-glass">
       <div class="section-heading">
-        <span class="eyebrow">Final Analytics Dashboard</span>
-        <h3>Model EDA and Visual Explanation Panel</h3>
+        <span class="eyebrow">Final Risk Assessment Dashboard</span>
+        <h3>Driving Risk Assessment and Lane Departure Analysis</h3>
         <p>
-          This dashboard explains how the lane detection system behaved across the full video,
-          including confidence, latency, lane coverage, lighting distribution, and example frames.
+          This final dashboard focuses on practical driving safety:
+          overall risk, lane departure behavior, vehicle offset trend,
+          lighting condition distribution, and the safest detected frame.
         </p>
       </div>
 
-      <div class="dashboard-metrics-grid" id="dashboardMetricsGrid">
-        <div class="stat-item">
-          <div class="stat-label">Dashboard Status</div>
-          <div class="stat-value">Waiting for analysis</div>
+      <div class="risk-layout">
+        <aside class="filter-panel">
+          <div class="filter-card">
+            <h4>Dashboard Filter Panel</h4>
+            <p>Use these buttons during your final presentation to show only the most important analytics.</p>
+          </div>
+
+          <div class="filter-card">
+            <div class="filter-label">Overall Risk</div>
+            <div id="filterRiskBadge" class="risk-badge neutral">Waiting</div>
+          </div>
+
+          <div class="filter-card">
+            <div class="filter-label">Quick Filters</div>
+            <div class="filter-actions">
+              <button class="filter-btn active" data-filter="all">Show All</button>
+              <button class="filter-btn" data-filter="overview">Overview</button>
+              <button class="filter-btn" data-filter="risk">Risk</button>
+              <button class="filter-btn" data-filter="tracking">Tracking</button>
+              <button class="filter-btn" data-filter="lighting">Lighting</button>
+              <button class="filter-btn" data-filter="frames">Frames</button>
+            </div>
+          </div>
+
+          <div class="filter-card">
+            <div class="filter-label">Important Indicators</div>
+            <ul class="summary-list" id="filterSummaryList">
+              <li>Waiting for processing...</li>
+            </ul>
+          </div>
+
+          <div class="filter-card">
+            <div class="filter-label">Zone Meaning</div>
+            <div class="legend-list">
+              <div><span class="legend-dot legend-safe"></span> Safe = vehicle centered in lane</div>
+              <div><span class="legend-dot legend-caution"></span> Caution = drifting from lane center</div>
+              <div><span class="legend-dot legend-danger"></span> Danger = off-lane / high-risk movement</div>
+            </div>
+          </div>
+
+          <div class="filter-card">
+            <div class="filter-label">Presentation Note</div>
+            <p class="panel-note">
+              This final version is designed for daytime, night-time, and snow-condition sample videos.
+            </p>
+          </div>
+        </aside>
+
+        <div class="risk-content">
+          <div class="dashboard-metrics-grid" id="dashboardMetricsGrid">
+            <div class="stat-item">
+              <div class="stat-label">Dashboard Status</div>
+              <div class="stat-value">Waiting for analysis</div>
+            </div>
+          </div>
+
+          <div class="chart-grid" id="chartGrid">
+            <div class="chart-card dashboard-filter-item" data-category="risk">
+              <div class="chart-card-head">
+                <h4>Frame-wise Risk Score</h4>
+                <span class="chip chip-blue">Trend</span>
+              </div>
+              <img id="chartRiskTrend" class="dashboard-image hidden" alt="Risk score chart">
+              <div class="chart-placeholder" id="chartRiskTrendPlaceholder">No chart yet</div>
+            </div>
+
+            <div class="chart-card dashboard-filter-item" data-category="tracking">
+              <div class="chart-card-head">
+                <h4>Vehicle Offset from Lane Center</h4>
+                <span class="chip chip-green">Tracking</span>
+              </div>
+              <img id="chartOffsetTrend" class="dashboard-image hidden" alt="Offset trend chart">
+              <div class="chart-placeholder" id="chartOffsetTrendPlaceholder">No chart yet</div>
+            </div>
+
+            <div class="chart-card dashboard-filter-item" data-category="overview">
+              <div class="chart-card-head">
+                <h4>Risk Zone Distribution</h4>
+                <span class="chip chip-purple">Distribution</span>
+              </div>
+              <img id="chartZoneBar" class="dashboard-image hidden" alt="Zone distribution chart">
+              <div class="chart-placeholder" id="chartZoneBarPlaceholder">No chart yet</div>
+            </div>
+
+            <div class="chart-card dashboard-filter-item" data-category="lighting">
+              <div class="chart-card-head">
+                <h4>Day vs Night vs Snow Frames</h4>
+                <span class="chip chip-blue">Conditions</span>
+              </div>
+              <img id="chartDayNight" class="dashboard-image hidden" alt="Condition chart">
+              <div class="chart-placeholder" id="chartDayNightPlaceholder">No chart yet</div>
+            </div>
+
+            <div class="chart-card dashboard-filter-item" data-category="overview">
+              <div class="chart-card-head">
+                <h4>Driving Risk Proportion</h4>
+                <span class="chip chip-purple">Overview</span>
+              </div>
+              <img id="chartRiskPie" class="dashboard-image hidden" alt="Risk pie chart">
+              <div class="chart-placeholder" id="chartRiskPiePlaceholder">No chart yet</div>
+            </div>
+
+            <div class="chart-card dashboard-filter-item" data-category="frames">
+              <div class="chart-card-head">
+                <h4>Safest Detected Frame</h4>
+                <span class="chip chip-green">Low Risk</span>
+              </div>
+              <img id="chartBestFrame" class="dashboard-image hidden" alt="Best frame">
+              <div class="chart-placeholder" id="chartBestFramePlaceholder">No image yet</div>
+            </div>
+          </div>
         </div>
       </div>
-
-        <div class="chart-card">
-          <div class="chart-card-head">
-            <h4>Frame-wise Confidence</h4>
-            <span class="chip chip-blue">Trend</span>
-          </div>
-          <img id="chartConfidence" class="dashboard-image hidden" alt="Confidence chart">
-          <div class="chart-placeholder" id="chartConfidencePlaceholder">No chart yet</div>
-        </div>
-
-        <div class="chart-card">
-          <div class="chart-card-head">
-            <h4>Frame-wise Latency</h4>
-            <span class="chip chip-green">Performance</span>
-          </div>
-          <img id="chartLatency" class="dashboard-image hidden" alt="Latency chart">
-          <div class="chart-placeholder" id="chartLatencyPlaceholder">No chart yet</div>
-        </div>
-
-        <div class="chart-card">
-          <div class="chart-card-head">
-            <h4>Lane Coverage Distribution</h4>
-            <span class="chip chip-purple">Distribution</span>
-          </div>
-          <img id="chartCoverage" class="dashboard-image hidden" alt="Coverage chart">
-          <div class="chart-placeholder" id="chartCoveragePlaceholder">No chart yet</div>
-        </div>
-
-        <div class="chart-card">
-          <div class="chart-card-head">
-            <h4>Best Detected Frame</h4>
-            <span class="chip chip-green">High Confidence</span>
-          </div>
-          <img id="chartBestFrame" class="dashboard-image hidden" alt="Best frame">
-          <div class="chart-placeholder" id="chartBestFramePlaceholder">No image yet</div>
-        </div>
     </section>
   </main>
 
