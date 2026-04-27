@@ -68,7 +68,7 @@ def api_process():
 
         return jsonify({
             "ok": True,
-            "message": "Lane detection and analytics dashboard generated successfully.",
+            "message": "Lane detection and risk assessment dashboard generated successfully.",
             "preview_url": url_for("output_file", filename=output_name),
             "download_url": url_for("download_file", filename=output_name),
             "stats": stats,
