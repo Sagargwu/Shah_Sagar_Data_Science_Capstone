@@ -1,242 +1,270 @@
 const uploadForm = document.getElementById("uploadForm");
 const videoInput = document.getElementById("videoInput");
+const dropZone = document.getElementById("dropZone");
 const selectedFileName = document.getElementById("selectedFileName");
 const processBtn = document.getElementById("processBtn");
+
 const statusBox = document.getElementById("statusBox");
 const statusText = document.getElementById("statusText");
-const dropZone = document.getElementById("dropZone");
 
 const originalVideo = document.getElementById("originalVideo");
 const processedVideo = document.getElementById("processedVideo");
 const originalPlaceholder = document.getElementById("originalPlaceholder");
 const processedPlaceholder = document.getElementById("processedPlaceholder");
-
-const statsGrid = document.getElementById("statsGrid");
 const downloadBtn = document.getElementById("downloadBtn");
 const syncPlayBtn = document.getElementById("syncPlayBtn");
+
+const statsGrid = document.getElementById("statsGrid");
+const dashboardMetricsGrid = document.getElementById("dashboardMetricsGrid");
 
 const heatmapImage = document.getElementById("heatmapImage");
 const heatmapPlaceholder = document.getElementById("heatmapPlaceholder");
 
-const dashboardMetricsGrid = document.getElementById("dashboardMetricsGrid");
-
-const chartHeatmap = document.getElementById("chartHeatmap");
-const chartConfidence = document.getElementById("chartConfidence");
-const chartLatency = document.getElementById("chartLatency");
-const chartCoverage = document.getElementById("chartCoverage");
+const chartRiskTrend = document.getElementById("chartRiskTrend");
+const chartOffsetTrend = document.getElementById("chartOffsetTrend");
+const chartZoneBar = document.getElementById("chartZoneBar");
 const chartDayNight = document.getElementById("chartDayNight");
+const chartRiskPie = document.getElementById("chartRiskPie");
 const chartBestFrame = document.getElementById("chartBestFrame");
-const chartWorstFrame = document.getElementById("chartWorstFrame");
 
-const chartHeatmapPlaceholder = document.getElementById("chartHeatmapPlaceholder");
-const chartConfidencePlaceholder = document.getElementById("chartConfidencePlaceholder");
-const chartLatencyPlaceholder = document.getElementById("chartLatencyPlaceholder");
-const chartCoveragePlaceholder = document.getElementById("chartCoveragePlaceholder");
+const chartRiskTrendPlaceholder = document.getElementById("chartRiskTrendPlaceholder");
+const chartOffsetTrendPlaceholder = document.getElementById("chartOffsetTrendPlaceholder");
+const chartZoneBarPlaceholder = document.getElementById("chartZoneBarPlaceholder");
 const chartDayNightPlaceholder = document.getElementById("chartDayNightPlaceholder");
+const chartRiskPiePlaceholder = document.getElementById("chartRiskPiePlaceholder");
 const chartBestFramePlaceholder = document.getElementById("chartBestFramePlaceholder");
-const chartWorstFramePlaceholder = document.getElementById("chartWorstFramePlaceholder");
 
-let selectedFile = null;
-let originalObjectUrl = null;
+const filterRiskBadge = document.getElementById("filterRiskBadge");
+const filterSummaryList = document.getElementById("filterSummaryList");
+const filterButtons = document.querySelectorAll(".filter-btn");
+const filterItems = document.querySelectorAll(".dashboard-filter-item");
 
 function setStatus(type, message) {
   statusBox.classList.remove("processing", "success", "error");
-  if (type) statusBox.classList.add(type);
+  if (type) {
+    statusBox.classList.add(type);
+  }
   statusText.textContent = message;
 }
 
-function formatNumber(value, digits = 2) {
-  if (value === null || value === undefined || Number.isNaN(Number(value))) {
+function formatValue(value, suffix = "") {
+  if (value === undefined || value === null || Number.isNaN(value)) {
     return "N/A";
   }
-  return Number(value).toFixed(digits);
+  return `${value}${suffix}`;
 }
 
-function renderStats(items) {
-  statsGrid.innerHTML = "";
-  items.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "stat-item";
-    div.innerHTML = `
-      <div class="stat-label">${item.label}</div>
-      <div class="stat-value">${item.value}</div>
-    `;
-    statsGrid.appendChild(div);
-  });
+function getRiskClass(risk) {
+  if (risk === "LOW") return "risk-low";
+  if (risk === "MEDIUM") return "risk-medium";
+  return "risk-high";
 }
 
-function renderDashboardMetrics(stats = {}) {
-  if (!dashboardMetricsGrid) return;
+function getRiskBadgeClass(risk) {
+  if (risk === "LOW") return "low";
+  if (risk === "MEDIUM") return "medium";
+  if (risk === "HIGH") return "high";
+  return "neutral";
+}
 
-  dashboardMetricsGrid.innerHTML = `
+function createStatCard(label, value, extraClass = "") {
+  return `
     <div class="stat-item">
-      <div class="stat-label">Processed Frames</div>
-      <div class="stat-value">${stats.processed_frames ?? "N/A"}</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-label">Average Latency</div>
-      <div class="stat-value">${formatNumber(stats.avg_inference_latency_ms)} ms</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-label">Processing FPS</div>
-      <div class="stat-value">${formatNumber(stats.processing_fps)}</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-label">Mean Confidence</div>
-      <div class="stat-value">${formatNumber((stats.mean_lane_confidence || 0) * 100)}%</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-label">Mean Lane Coverage</div>
-      <div class="stat-value">${formatNumber((stats.mean_lane_coverage || 0) * 100)}%</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-label">Mean Brightness</div>
-      <div class="stat-value">${formatNumber(stats.mean_brightness)}</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-label">Day Frames</div>
-      <div class="stat-value">${stats.day_frames_detected ?? "N/A"}</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-label">Night Frames</div>
-      <div class="stat-value">${stats.night_frames_detected ?? "N/A"}</div>
+      <div class="stat-label">${label}</div>
+      <div class="stat-value ${extraClass}">${value}</div>
     </div>
   `;
 }
 
 function resetImage(imgEl, placeholderEl) {
-  if (!imgEl || !placeholderEl) return;
-  imgEl.removeAttribute("src");
+  imgEl.src = "";
   imgEl.classList.add("hidden");
   placeholderEl.classList.remove("hidden");
 }
 
-function showDashboardImage(imgEl, placeholderEl, src) {
-  if (!imgEl || !placeholderEl || !src) return;
+function setImage(imgEl, placeholderEl, src) {
+  if (!src) {
+    resetImage(imgEl, placeholderEl);
+    return;
+  }
   imgEl.src = `${src}?t=${Date.now()}`;
   imgEl.classList.remove("hidden");
   placeholderEl.classList.add("hidden");
 }
 
-function resetDashboardCharts() {
-  resetImage(chartHeatmap, chartHeatmapPlaceholder);
-  resetImage(chartConfidence, chartConfidencePlaceholder);
-  resetImage(chartLatency, chartLatencyPlaceholder);
-  resetImage(chartCoverage, chartCoveragePlaceholder);
-  resetImage(chartDayNight, chartDayNightPlaceholder);
-  resetImage(chartBestFrame, chartBestFramePlaceholder);
-  resetImage(chartWorstFrame, chartWorstFramePlaceholder);
-
-  if (dashboardMetricsGrid) {
-    dashboardMetricsGrid.innerHTML = `
-      <div class="stat-item">
-        <div class="stat-label">Dashboard Status</div>
-        <div class="stat-value">Waiting for analysis</div>
-      </div>
-    `;
-  }
+function updateFilterBadge(risk) {
+  filterRiskBadge.className = `risk-badge ${getRiskBadgeClass(risk)}`;
+  filterRiskBadge.textContent = risk || "Waiting";
 }
 
-function setSelectedFile(file) {
-  selectedFile = file;
+function updateFilterSummary(stats) {
+  filterSummaryList.innerHTML = `
+    <li><strong>Average Risk:</strong> ${formatValue(stats.avg_risk_score, "%")}</li>
+    <li><strong>Lane Departures:</strong> ${formatValue(stats.lane_departure_events)}</li>
+    <li><strong>Safe Frames:</strong> ${formatValue(stats.safe_frames)}</li>
+    <li><strong>Caution Frames:</strong> ${formatValue(stats.caution_frames)}</li>
+    <li><strong>Danger Frames:</strong> ${formatValue(stats.danger_frames)}</li>
+    <li><strong>Night Frames:</strong> ${formatValue(stats.night_frames_detected)}</li>
+    <li><strong>Snow Frames:</strong> ${formatValue(stats.snow_frames_detected)}</li>
+  `;
+}
+
+function resetDashboard() {
+  statsGrid.innerHTML = createStatCard("Status", "Waiting");
+  dashboardMetricsGrid.innerHTML = createStatCard("Dashboard Status", "Waiting for analysis");
+
+  resetImage(heatmapImage, heatmapPlaceholder);
+  resetImage(chartRiskTrend, chartRiskTrendPlaceholder);
+  resetImage(chartOffsetTrend, chartOffsetTrendPlaceholder);
+  resetImage(chartZoneBar, chartZoneBarPlaceholder);
+  resetImage(chartDayNight, chartDayNightPlaceholder);
+  resetImage(chartRiskPie, chartRiskPiePlaceholder);
+  resetImage(chartBestFrame, chartBestFramePlaceholder);
+
+  updateFilterBadge("Waiting");
+  filterSummaryList.innerHTML = "<li>Waiting for processing...</li>";
+}
+
+function updateStats(stats) {
+  const riskClass = getRiskClass(stats.overall_risk);
+
+  statsGrid.innerHTML = `
+    ${createStatCard("Input Video", stats.input_video || "N/A")}
+    ${createStatCard("Output Video", stats.output_video || "N/A")}
+    ${createStatCard("Duration", formatValue(stats.duration_seconds, " s"))}
+    ${createStatCard("Input FPS", formatValue(stats.input_fps))}
+    ${createStatCard("Frames Processed", formatValue(stats.processed_frames))}
+    ${createStatCard("Avg Inference Latency", formatValue(stats.avg_inference_latency_ms, " ms/frame"))}
+    ${createStatCard("Processing Throughput", formatValue(stats.processing_fps, " FPS"))}
+    ${createStatCard("Overall Risk", stats.overall_risk || "N/A", riskClass)}
+    ${createStatCard("Avg Risk Score", formatValue(stats.avg_risk_score, "%"))}
+    ${createStatCard("Lane Departures", formatValue(stats.lane_departure_events))}
+    ${createStatCard("Night Frames", formatValue(stats.night_frames_detected))}
+    ${createStatCard("Snow Frames", formatValue(stats.snow_frames_detected))}
+  `;
+
+  dashboardMetricsGrid.innerHTML = `
+    ${createStatCard("Processed Frames", formatValue(stats.processed_frames))}
+    ${createStatCard("Average Latency", formatValue(stats.avg_inference_latency_ms, " ms"))}
+    ${createStatCard("Processing FPS", formatValue(stats.processing_fps))}
+    ${createStatCard("Overall Risk", stats.overall_risk || "N/A", riskClass)}
+    ${createStatCard("Average Risk Score", formatValue(stats.avg_risk_score, "%"))}
+    ${createStatCard("Maximum Risk Score", formatValue(stats.max_risk_score, "%"))}
+    ${createStatCard("Lane Departure Events", formatValue(stats.lane_departure_events))}
+    ${createStatCard("Max Departure", formatValue(stats.max_departure_percent, "%"))}
+    ${createStatCard("Safe Frames", formatValue(stats.safe_frames))}
+    ${createStatCard("Caution Frames", formatValue(stats.caution_frames))}
+    ${createStatCard("Danger Frames", formatValue(stats.danger_frames))}
+    ${createStatCard("Road Position Bias", formatValue(stats.road_position_bias_pixels, " px"))}
+  `;
+
+  updateFilterBadge(stats.overall_risk);
+  updateFilterSummary(stats);
+}
+
+function updateAssets(assets) {
+  setImage(heatmapImage, heatmapPlaceholder, assets.heatmap);
+  setImage(chartRiskTrend, chartRiskTrendPlaceholder, assets.risk_plot);
+  setImage(chartOffsetTrend, chartOffsetTrendPlaceholder, assets.offset_plot);
+  setImage(chartZoneBar, chartZoneBarPlaceholder, assets.zone_chart);
+  setImage(chartDayNight, chartDayNightPlaceholder, assets.day_night_chart);
+  setImage(chartRiskPie, chartRiskPiePlaceholder, assets.risk_pie_chart);
+  setImage(chartBestFrame, chartBestFramePlaceholder, assets.best_frame);
+}
+
+function applyFilter(category) {
+  filterButtons.forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.filter === category);
+  });
+
+  filterItems.forEach((item) => {
+    if (category === "all" || item.dataset.category === category) {
+      item.classList.remove("hidden");
+    } else {
+      item.classList.add("hidden");
+    }
+  });
+}
+
+filterButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    applyFilter(btn.dataset.filter);
+  });
+});
+
+videoInput.addEventListener("change", () => {
+  const file = videoInput.files[0];
   selectedFileName.textContent = file ? file.name : "No file selected";
 
-  if (originalObjectUrl) {
-    URL.revokeObjectURL(originalObjectUrl);
-    originalObjectUrl = null;
-  }
-
   if (file) {
-    originalObjectUrl = URL.createObjectURL(file);
-    originalVideo.src = originalObjectUrl;
+    const fileURL = URL.createObjectURL(file);
+    originalVideo.src = fileURL;
     originalVideo.classList.remove("hidden");
     originalPlaceholder.classList.add("hidden");
-    setStatus("", "Video selected. Ready to process.");
-  } else {
-    originalVideo.removeAttribute("src");
-    originalVideo.load();
-    originalVideo.classList.add("hidden");
-    originalPlaceholder.classList.remove("hidden");
-    setStatus("", "Waiting for video upload...");
   }
-
-  processedVideo.pause();
-  processedVideo.removeAttribute("src");
-  processedVideo.load();
-  processedVideo.classList.add("hidden");
-  processedPlaceholder.classList.remove("hidden");
-
-  heatmapImage.removeAttribute("src");
-  heatmapImage.classList.add("hidden");
-  heatmapPlaceholder.classList.remove("hidden");
-
-  downloadBtn.classList.add("hidden");
-  downloadBtn.removeAttribute("href");
-
-  renderStats([
-    { label: "Status", value: file ? "Ready to process" : "Waiting" }
-  ]);
-
-  resetDashboardCharts();
-}
-
-videoInput.addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  setSelectedFile(file || null);
 });
 
-dropZone.addEventListener("dragover", (e) => {
-  e.preventDefault();
-  dropZone.classList.add("dragover");
+["dragenter", "dragover"].forEach((eventName) => {
+  dropZone.addEventListener(eventName, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dropZone.classList.add("dragover");
+  });
 });
 
-dropZone.addEventListener("dragleave", () => {
-  dropZone.classList.remove("dragover");
+["dragleave", "drop"].forEach((eventName) => {
+  dropZone.addEventListener(eventName, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dropZone.classList.remove("dragover");
+  });
 });
 
 dropZone.addEventListener("drop", (e) => {
-  e.preventDefault();
-  dropZone.classList.remove("dragover");
+  const files = e.dataTransfer.files;
+  if (files && files.length > 0) {
+    videoInput.files = files;
+    const file = files[0];
+    selectedFileName.textContent = file.name;
 
-  const file = e.dataTransfer.files[0];
-  if (!file) return;
+    const fileURL = URL.createObjectURL(file);
+    originalVideo.src = fileURL;
+    originalVideo.classList.remove("hidden");
+    originalPlaceholder.classList.add("hidden");
+  }
+});
 
-  videoInput.files = e.dataTransfer.files;
-  setSelectedFile(file);
+syncPlayBtn.addEventListener("click", () => {
+  if (!originalVideo.src || !processedVideo.src) return;
+
+  const targetTime = Math.min(originalVideo.currentTime || 0, processedVideo.currentTime || 0);
+  originalVideo.currentTime = targetTime;
+  processedVideo.currentTime = targetTime;
+
+  originalVideo.play();
+  processedVideo.play();
 });
 
 uploadForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  if (!selectedFile) {
-    setStatus("error", "Please select a video file first.");
+  const file = videoInput.files[0];
+  if (!file) {
+    setStatus("error", "Please select a video before processing.");
     return;
   }
 
+  resetDashboard();
+  processedVideo.classList.add("hidden");
+  processedPlaceholder.classList.remove("hidden");
+  downloadBtn.classList.add("hidden");
+
   const formData = new FormData();
-  formData.append("video", selectedFile);
+  formData.append("video", file);
 
   processBtn.disabled = true;
   processBtn.textContent = "Processing...";
-  setStatus("processing", "Processing video... please wait.");
-
-  renderStats([
-    { label: "Status", value: "Processing started" },
-    { label: "File", value: selectedFile.name },
-    { label: "Mode", value: "Frame-by-frame lane inference" },
-    { label: "Visualization", value: "Preparing analytics..." }
-  ]);
-
-  renderDashboardMetrics({
-    processed_frames: "Running...",
-    avg_inference_latency_ms: null,
-    processing_fps: null,
-    mean_lane_confidence: null,
-    mean_lane_coverage: null,
-    mean_brightness: null,
-    day_frames_detected: null,
-    night_frames_detected: null
-  });
+  setStatus("processing", "Processing video and generating risk assessment dashboard...");
 
   try {
     const response = await fetch("/api/process", {
@@ -250,15 +278,12 @@ uploadForm.addEventListener("submit", async (e) => {
       throw new Error(data.message || "Processing failed.");
     }
 
-    processedVideo.src = data.preview_url;
-    processedVideo.classList.remove("hidden");
-    processedPlaceholder.classList.add("hidden");
-    processedVideo.load();
+    setStatus("success", data.message || "Processing complete.");
 
-    if (data.assets && data.assets.heatmap) {
-      heatmapImage.src = `${data.assets.heatmap}?t=${Date.now()}`;
-      heatmapImage.classList.remove("hidden");
-      heatmapPlaceholder.classList.add("hidden");
+    if (data.preview_url) {
+      processedVideo.src = `${data.preview_url}?t=${Date.now()}`;
+      processedVideo.classList.remove("hidden");
+      processedPlaceholder.classList.add("hidden");
     }
 
     if (data.download_url) {
@@ -266,115 +291,24 @@ uploadForm.addEventListener("submit", async (e) => {
       downloadBtn.classList.remove("hidden");
     }
 
-    const stats = data.stats || {};
-    renderStats([
-      { label: "Input Video", value: stats.input_video || "N/A" },
-      { label: "Output Video", value: stats.output_video || "N/A" },
-      { label: "Duration", value: `${formatNumber(stats.duration_seconds)} s` },
-      { label: "Input FPS", value: formatNumber(stats.input_fps) },
-      { label: "Frames Processed", value: stats.processed_frames ?? "N/A" },
-      { label: "Avg Inference Latency", value: `${formatNumber(stats.avg_inference_latency_ms)} ms/frame` },
-      { label: "End-to-End Time", value: `${formatNumber(stats.processing_seconds)} s` },
-      { label: "Processing Throughput", value: `${formatNumber(stats.processing_fps)} FPS` },
-      { label: "Mean Lane Confidence", value: `${formatNumber((stats.mean_lane_confidence || 0) * 100)}%` },
-      { label: "Night Frames", value: stats.night_frames_detected ?? "N/A" }
-    ]);
-
-    renderDashboardMetrics(stats);
-
-    const assets = data.assets || {};
-    showDashboardImage(chartHeatmap, chartHeatmapPlaceholder, assets.heatmap);
-    showDashboardImage(chartConfidence, chartConfidencePlaceholder, assets.confidence_plot);
-    showDashboardImage(chartLatency, chartLatencyPlaceholder, assets.latency_plot);
-    showDashboardImage(chartCoverage, chartCoveragePlaceholder, assets.coverage_histogram);
-    showDashboardImage(chartDayNight, chartDayNightPlaceholder, assets.day_night_chart);
-    showDashboardImage(chartBestFrame, chartBestFramePlaceholder, assets.best_frame);
-    showDashboardImage(chartWorstFrame, chartWorstFramePlaceholder, assets.worst_frame);
-
-    setStatus("success", data.message || "Lane detection completed successfully.");
-  } catch (error) {
-    setStatus("error", error.message || "Something went wrong.");
-
-    renderStats([
-      { label: "Status", value: "Processing failed" },
-      { label: "Reason", value: error.message || "Unknown error" }
-    ]);
-
-    if (dashboardMetricsGrid) {
-      dashboardMetricsGrid.innerHTML = `
-        <div class="stat-item">
-          <div class="stat-label">Dashboard Status</div>
-          <div class="stat-value">Processing failed</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-label">Reason</div>
-          <div class="stat-value">${error.message || "Unknown error"}</div>
-        </div>
-      `;
+    if (data.stats) {
+      updateStats(data.stats);
     }
+
+    if (data.assets) {
+      updateAssets(data.assets);
+    }
+
+    applyFilter("all");
+    document.getElementById("risk-dashboard").scrollIntoView({ behavior: "smooth" });
+  } catch (error) {
+    console.error(error);
+    setStatus("error", error.message || "Something went wrong while processing the video.");
   } finally {
     processBtn.disabled = false;
     processBtn.textContent = "Process Video";
   }
 });
 
-syncPlayBtn.addEventListener("click", () => {
-  if (!originalVideo.src || !processedVideo.src) {
-    setStatus("error", "Load and process a video first before sync playback.");
-    return;
-  }
-
-  const currentTime = Math.min(originalVideo.currentTime || 0, processedVideo.currentTime || 0);
-  originalVideo.currentTime = currentTime;
-  processedVideo.currentTime = currentTime;
-
-  const playOriginal = originalVideo.play();
-  const playProcessed = processedVideo.play();
-
-  Promise.allSettled([playOriginal, playProcessed]).then(() => {
-    setStatus("success", "Original and processed videos are now playing together.");
-  });
-});
-
-function syncFromSource(source, target) {
-  if (!source || !target) return;
-  if (Math.abs((source.currentTime || 0) - (target.currentTime || 0)) > 0.35) {
-    target.currentTime = source.currentTime;
-  }
-}
-
-originalVideo.addEventListener("play", () => {
-  if (processedVideo.src && processedVideo.paused) {
-    processedVideo.currentTime = originalVideo.currentTime;
-    processedVideo.play().catch(() => {});
-  }
-});
-
-processedVideo.addEventListener("play", () => {
-  if (originalVideo.src && originalVideo.paused) {
-    originalVideo.currentTime = processedVideo.currentTime;
-    originalVideo.play().catch(() => {});
-  }
-});
-
-originalVideo.addEventListener("pause", () => {
-  if (!processedVideo.paused) processedVideo.pause();
-});
-
-processedVideo.addEventListener("pause", () => {
-  if (!originalVideo.paused) originalVideo.pause();
-});
-
-originalVideo.addEventListener("seeked", () => {
-  syncFromSource(originalVideo, processedVideo);
-});
-
-processedVideo.addEventListener("seeked", () => {
-  syncFromSource(processedVideo, originalVideo);
-});
-
-renderStats([
-  { label: "Status", value: "Waiting" }
-]);
-
-resetDashboardCharts();
+resetDashboard();
+applyFilter("all");
